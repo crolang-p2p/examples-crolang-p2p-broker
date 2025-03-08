@@ -1,0 +1,22 @@
+{
+  "name": "extension_server_example",
+  "version": "1.0.0",
+  "description": "A server example implementing crolang broker's extension webhooks",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crolang/broker_complete_example.git"
+  },
+  "author": "Alessandro Talmi alessandro.talmi@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/crolang/broker_complete_example/issues"
+  },
+  "homepage": "https://github.com/crolang/broker_complete_example#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

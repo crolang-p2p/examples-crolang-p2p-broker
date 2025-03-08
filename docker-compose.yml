@@ -1,17 +1,4 @@
-version: '3'
-
 services:
-
-  haproxy-service:
-    image: haproxy
-    container_name: haproxy-broker
-    ports:
-        - "8080:8080"
-    volumes:
-        - ./haproxy:/usr/local/etc/haproxy
-    depends_on:
-      - broker-service-1
-      - broker-service-2
 
   redis-service:
     image: redis:alpine
@@ -19,22 +6,46 @@ services:
     volumes:
       - ./redis-volume:/data
 
+  webhook-extensions-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: extension_server_example
+    environment:
+      - PORT=8083
+    restart: always
+
   broker-service-1:
     image: alessandrotalmi/broker-service
     container_name: broker-1
     depends_on:
       - redis-service
+      - webhook-extensions-server
     environment:
       - PORT=8081
       - LOG_LEVEL=2
       - REDIS_URL=redis://redis-service:6379
+      - NODES_VALIDITY_CHECK_WEBHOOK_URL=http://webhook-extensions-server:8083/validity-check
 
   broker-service-2:
     image: alessandrotalmi/broker-service
     container_name: broker-2
     depends_on:
       - redis-service
+      - webhook-extensions-server
     environment:
       - PORT=8082
       - LOG_LEVEL=2
       - REDIS_URL=redis://redis-service:6379
+      - NODES_VALIDITY_CHECK_WEBHOOK_URL=http://webhook-extensions-server:8083/validity-check
+
+  haproxy-service:
+    image: haproxy
+    container_name: haproxy-broker
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./haproxy:/usr/local/etc/haproxy
+    depends_on:
+      - broker-service-1
+      - broker-service-2
