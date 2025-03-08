@@ -1,0 +1,5 @@
+/dist
+/node_modules
+/redis-volume
+.idea
+.DS_Store

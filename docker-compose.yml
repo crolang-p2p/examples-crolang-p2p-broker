@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+
+  haproxy-service:
+    image: haproxy
+    container_name: haproxy-broker
+    ports:
+        - "8080:8080"
+    volumes:
+        - ./haproxy:/usr/local/etc/haproxy
+    depends_on:
+      - broker-service-1
+      - broker-service-2
+
+  redis-service:
+    image: redis:alpine
+    container_name: redis-broker
+    volumes:
+      - ./redis-volume:/data
+
+  broker-service-1:
+    image: alessandrotalmi/broker-service
+    container_name: broker-1
+    depends_on:
+      - redis-service
+    environment:
+      - PORT=8081
+      - LOG_LEVEL=2
+      - REDIS_URL=redis://redis-service:6379
+
+  broker-service-2:
+    image: alessandrotalmi/broker-service
+    container_name: broker-2
+    depends_on:
+      - redis-service
+    environment:
+      - PORT=8082
+      - LOG_LEVEL=2
+      - REDIS_URL=redis://redis-service:6379
