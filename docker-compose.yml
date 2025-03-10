@@ -16,7 +16,7 @@ services:
     restart: always
 
   broker-service-1:
-    image: alessandrotalmi/broker-service:1.0.2
+    image: alessandrotalmi/broker-service
     container_name: broker-1
     depends_on:
       - redis-service
@@ -25,13 +25,13 @@ services:
       - PORT=8081
       - LOG_LEVEL=2
       - REDIS_URL=redis://redis-service:6379
-      #- RTC_CONFIGURATION_RESOLVER_WEBHOOK_URL=http://webhook-extensions-server:8083/resolve-rtc-configuration
+      - RTC_CONFIGURATION_RESOLVER_WEBHOOK_URL=http://webhook-extensions-server:8083/resolve-rtc-configuration
       - NODES_AUTHENTICATION_WEBHOOK_URL=http://webhook-extensions-server:8083/authenticate-node
       - AUTHORIZE_NODES_COMMUNICATION_WEBHOOK_URL=http://webhook-extensions-server:8083/authorize-nodes-communication
       - NODES_VALIDITY_CHECK_WEBHOOK_URL=http://webhook-extensions-server:8083/validity-check
 
   broker-service-2:
-    image: alessandrotalmi/broker-service:1.0.2
+    image: alessandrotalmi/broker-service
     container_name: broker-2
     depends_on:
       - redis-service
@@ -40,7 +40,7 @@ services:
       - PORT=8082
       - LOG_LEVEL=2
       - REDIS_URL=redis://redis-service:6379
-      #- RTC_CONFIGURATION_RESOLVER_WEBHOOK_URL=http://webhook-extensions-server:8083/resolve-rtc-configuration
+      - RTC_CONFIGURATION_RESOLVER_WEBHOOK_URL=http://webhook-extensions-server:8083/resolve-rtc-configuration
       - NODES_AUTHENTICATION_WEBHOOK_URL=http://webhook-extensions-server:8083/authenticate-node
       - AUTHORIZE_NODES_COMMUNICATION_WEBHOOK_URL=http://webhook-extensions-server:8083/authorize-nodes-communication
       - NODES_VALIDITY_CHECK_WEBHOOK_URL=http://webhook-extensions-server:8083/validity-check

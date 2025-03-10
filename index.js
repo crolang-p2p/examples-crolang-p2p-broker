@@ -8,9 +8,35 @@ app.use(express.json());
 app.post('/resolve-rtc-configuration', (req, res) => {
     const { nodeId } = req.body;
     console.log("Received RTC configuration request from node with id: ", nodeId);
-    const rtcConfiguration = null;
-    console.log("Sending RTC configuration to node with id ", nodeId, ": ", rtcConfiguration);
-    res.json({ rtcConfiguration });
+    const rtcConfiguration = {
+        iceServers: [
+            {
+                urls: ["stun:openrelay.metered.ca:80"]
+            },
+            {
+                urls: ["turn:openrelay.metered.ca:80"],
+                username: "openrelayproject",
+                password: "openrelayproject"
+            },
+            {
+                urls: ["turn:openrelay.metered.ca:443"],
+                username: "openrelayproject",
+                password: "openrelayproject"
+            },
+            {
+                urls: ["turn:openrelay.metered.ca:443?transport=tcp"],
+                username: "openrelayproject",
+                password: "openrelayproject"
+            }
+        ],
+        iceTransportPolicy: "all",
+        bundlePolicy: "max-bundle",
+        rtcpMuxPolicy: "require",
+        iceCandidatePoolSize: 10,
+        expiresTimestampUTC: Date.now() + 60000 // 1 minute
+    };
+    console.log("Sending RTC configuration to node with id ", nodeId, ", the configuration will expire in 1 minute");
+    res.json({ rtcConfiguration: rtcConfiguration });
 });
 
 app.post('/authenticate-node', (req, res) => {
@@ -30,7 +56,7 @@ app.post('/validity-check', (req, res) => {
     console.log("Received from broker these connected nodes ids: ", connectedNodesIds);
     const invalidNodesIds = connectedNodesIds.filter(nodeId => nodeId === "to-be-disconnected");
     console.log("Sending to broker these invalid nodes ids: ", invalidNodesIds);
-    res.json({ invalidNodesIds });
+    res.json({ invalidNodesIds: invalidNodesIds });
 });
 
 app.listen(PORT, () => {
