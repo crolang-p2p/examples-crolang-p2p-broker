@@ -1,41 +1,52 @@
 const express = require('express');
+const crypto = require('crypto');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+const TURN_SECRET = "the-secret";
+const TTL = 300;  // 5 minutes
+
 app.post('/resolve-rtc-configuration', (req, res) => {
     const { nodeId } = req.body;
+
+    const timestamp = Math.floor(Date.now() / 1000) + TTL;
+    const username = `${timestamp}:${nodeId || 'guest'}`;
+
+    const password = crypto.createHmac('sha1', TURN_SECRET)
+        .update(username)
+        .digest('hex');
+
     console.log("Received RTC configuration request from node with id: ", nodeId);
     const rtcConfiguration = {
         iceServers: [
             {
-                urls: ["stun:openrelay.metered.ca:80"]
+                urls: ["stun:localhost:3478"]
             },
             {
-                urls: ["turn:openrelay.metered.ca:80"],
-                username: "openrelayproject",
-                password: "openrelayproject"
+                urls: ["turn:localhost:3478"],
+                username: username,
+                password: password
             },
             {
                 urls: ["turn:openrelay.metered.ca:443"],
-                username: "openrelayproject",
-                password: "openrelayproject"
+                username: username,
+                password: password
             },
             {
-                urls: ["turn:openrelay.metered.ca:443?transport=tcp"],
-                username: "openrelayproject",
-                password: "openrelayproject"
+                urls: ["turn:localhost:5349?transport=tcp"],
+                username: username,
+                password: password
             }
         ],
         iceTransportPolicy: "all",
         bundlePolicy: "max-bundle",
         rtcpMuxPolicy: "require",
-        iceCandidatePoolSize: 10,
-        expiresTimestampUTC: Date.now() + 60000 // 1 minute
+        iceCandidatePoolSize: 10
     };
-    console.log("Sending RTC configuration to node with id ", nodeId, ", the configuration will expire in 1 minute");
+    console.log("Sending RTC configuration to node with id ", nodeId);
     res.json({ rtcConfiguration: rtcConfiguration });
 });
 

@@ -15,12 +15,25 @@ services:
       - PORT=8083
     restart: always
 
+  coturn-service:
+    image: coturn/coturn
+    container_name: coturn
+    volumes:
+      - ./coturn-config:/etc/turnserver
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "5349:5349"
+      - "5349:5349/udp"
+    restart: always
+
   broker-service-1:
     image: alessandrotalmi/broker-service
     container_name: broker-1
     depends_on:
       - redis-service
       - webhook-extensions-server
+      - coturn-service
     environment:
       - PORT=8081
       - LOG_LEVEL=2
@@ -36,6 +49,7 @@ services:
     depends_on:
       - redis-service
       - webhook-extensions-server
+      - coturn-service
     environment:
       - PORT=8082
       - LOG_LEVEL=2

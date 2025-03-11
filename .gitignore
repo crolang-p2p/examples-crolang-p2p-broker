@@ -3,3 +3,4 @@
 /redis-volume
 .idea
 .DS_Store
+**.pem
