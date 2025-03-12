@@ -4,9 +4,9 @@ TODO
 ## Table of contents
 - [Broker Architecture examples](#broker-architecture-examples)
   - [Standalone architecture](#standalone-architecture)
-  - [Complete architecture](#complete-architecture)
+  - [Extended architecture](#extended-architecture)
   - [Architectures comparison](#architectures-comparison)
-- [Running the complete example](#running-the-complete-example)
+- [Running the extended example](#running-the-extended-example)
   - [Generating coturn certificates](#generating-coturn-certificates)
   - [Executing the docker-compose](#executing-the-docker-compose)
 - [Modules](#modules)
@@ -48,7 +48,7 @@ To solve this issue, you can use a [TURN server](https://webrtc.org/getting-star
 Depending on your use case, you may be ok with just using STUN servers, but if you need a more reliable setup, you should 
 [consider using a TURN server](https://medium.com/@nerdchacha/what-are-stun-and-turn-servers-and-why-do-we-need-them-in-webrtc-9d5b8f96b338).
 
-### Complete architecture
+### Extended architecture
 This repository provides an example of a more complex setup in the [docker-compose.yml](./docker-compose.yml) file.  
 
 As you can see, the docker compose file specifies the following services:
@@ -69,8 +69,8 @@ The two Broker instances are executed passing the following additional environme
 
 The detailed usage of said variables is explained in the [Modules](#modules) section but, as a general guideline:  
 - the Redis URL allows the execution of multiple Broker instances, enabling horizontal scaling
-- the webhook URLs allow to specify custom services to customize the Broker behavior is key aspects of a Crolang Node's 
-lifecycle; in particular, the RTC webhook defines the logic for retrieving valid RTC configurations that will be used by the 
+- the webhook URLs allow to specify custom endpoints to customize the Broker behavior is key aspects of a Crolang Node's 
+lifecycle; in particular, the RTC webhook defines the logic for retrieving valid RTC configurations that will be used by a 
 Crolang Node in order to connect to your STUN/TURN server (coturn in this example).
 
 This repository provides a really simple example of a webhook server; it's implementation can be found in [index.js](./index.js) file.  
@@ -85,9 +85,18 @@ If you need to customize the behaviour of the Broker service without using the w
 feel free to fork the [Broker's repository](https://github.com/crolang/broker) and modify the code as you see fit.
 
 ### Architectures comparison
-TODO
+This table summarizes the differences between the standalone and extended architectures:
 
-## Running the complete example
+|                                    | Standalone                                                                                                                          | Extended                                                                                                                                                                                           |
+|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Simplicity                         | As simple as it can get. Just by running the Broker service you're ready to go                                                      | Requires additional setup to customize logic and enhance nodes connectivity                                                                                                                        |
+| Horizontal scalability             | No horizontal scalability                                                                                                           | Allows to add multiple Broker  instances without an impact on the Nodes that will always see the  Broker as just one entity                                                                        |
+| Nodes connectivity capabilities    | Nodes will connect among each other  as long as their networks allow them to resolve the connection by just  using the STUN servers | Nodes will always connect among each  other bypassing networks limitations by using a combination of STUN and  TURN servers; credentials fo said servers will be provided by the provided endpoint |
+| Nodes authentication to the Broker | As long as no other Node with the same ID is connected, the connecting Node will always be authenticated successfully               | The limit on ID duplicates will be maintained but the custom  authentication logic provided by the endpoint will be enforced                                                                       |
+| Nodes communication authorization  | Two connected Nodes will always be able to exchange messages through the Broker in order to establish their connection              | Two connected Nodes will be able to exchange messages through the Broker in order to establish their connection only if the custom logic provided by the endpoint will allow them to               |
+| Nodes validity through lifecycle   | Nodes connected to the Broker will always be considered valid                                                                       | The Broker will periodically check for its connected nodes validity by using the custom logic provided by the endpoint (e.g. a Node gets banned and needs to be disconnected)                      |
+
+## Running the extended example
 ### Generating coturn certificates
 In order to run the coturn service, you need to generate some certificates for the coturn service.  
 
