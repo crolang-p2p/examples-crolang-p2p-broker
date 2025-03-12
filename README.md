@@ -6,9 +6,11 @@ TODO
   - [Standalone architecture](#standalone-architecture)
   - [Extended architecture](#extended-architecture)
   - [Architectures comparison](#architectures-comparison)
-- [Running the extended example](#running-the-extended-example)
-  - [Generating coturn certificates](#generating-coturn-certificates)
-  - [Executing the docker-compose](#executing-the-docker-compose)
+- [Running the architecture examples](#running-the-architecture-examples)
+  - [Running the standalone example](#running-the-standalone-example)
+  - [Running the extended example](#running-the-extended-example)
+    - [Generating coturn certificates](#generating-coturn-certificates)
+    - [Executing the docker-compose](#executing-the-docker-compose)
 - [Modules](#modules)
 - [License](#license)
 
@@ -25,19 +27,15 @@ communication is based on [WebRTC](https://webrtc.org/), which is a complex tech
 In order to reliably connect Crolang Nodes among all different network types, additional setup is required as we will see in the next sections.
 
 ### Standalone architecture
+(See [Running the standalone example](#running-the-standalone-example) for instructions on how to run this architecture example)
+
 Running a single broker instance is the simplest way to use the Crolang Broker.
 
-On a terminal, run the following command:
-
-```bash
-docker run --rm --name broker-service -p 8080:8080 alessandrotalmi/broker-service
-```
-This will run a single Broker instance on the default port 8080 and won't require any additional setup.
+This is achieved by simply running a Docker container using the Broker image, without any additional setup.
 
 ![Standalone architecture](./doc/broker_standalone_example.png)
-
-Once the service is running, try connecting to it using any Crolang Node client implementation, using __http://localhost:8080__ as the Broker address.  
-As long as the clients are on the same network, they will be able to connect to each other without any additional setup.
+ 
+As long as the clients are networks that are resolvable by just using STUN servers, they will be able to connect to each other without any additional setup.
 
 Running the project this way uses free STUN servers are used for the WebRTC connections among Crolang Nodes;
 by default the project uses [Google's free STUN servers](https://dev.to/alakkadshaw/google-stun-server-list-21n4).
@@ -49,6 +47,8 @@ Depending on your use case, you may be ok with just using STUN servers, but if y
 [consider using a TURN server](https://medium.com/@nerdchacha/what-are-stun-and-turn-servers-and-why-do-we-need-them-in-webrtc-9d5b8f96b338).
 
 ### Extended architecture
+(See [Running the extended example](#running-the-extended-example) for instructions on how to run this architecture example)
+
 This repository provides an example of a more complex setup in the [docker-compose.yml](./docker-compose.yml) file.  
 
 As you can see, the docker compose file specifies the following services:
@@ -78,6 +78,11 @@ This repository provides a really simple example of a webhook server; it's imple
 Through the use of the webhook services, you can customize the Broker behavior transparently by providing your custom business logic 
 using your REST server(s) without the need to modify the Broker service itself.
 
+The example webhook server, other than trivial authentication logic, provides a simple RTC configuration resolver that returns 
+credentials for Coturn; said credentials also include a time limitation, ensuring that, even if leaked, said credentials 
+will not be used to connect to the TURN server indefinitely, thus increasing the security of the TURN server and preventing 
+abuses of your TURN server resources.
+
 Keep in mind that none of these variables are nor required nor related to one another; you can use them independently of
 each other and even provide a partial configuration, depending on of what you're trying to achieve.
 
@@ -91,13 +96,27 @@ This table summarizes the differences between the standalone and extended archit
 |------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Simplicity                         | As simple as it can get. Just by running the Broker service you're ready to go                                                      | Requires additional setup to customize logic and enhance nodes connectivity                                                                                                                        |
 | Horizontal scalability             | No horizontal scalability                                                                                                           | Allows to add multiple Broker  instances without an impact on the Nodes that will always see the  Broker as just one entity                                                                        |
-| Nodes connectivity capabilities    | Nodes will connect among each other  as long as their networks allow them to resolve the connection by just  using the STUN servers | Nodes will always connect among each  other bypassing networks limitations by using a combination of STUN and  TURN servers; credentials fo said servers will be provided by the provided endpoint |
+| Nodes connectivity capabilities    | Nodes will connect among each other  as long as their networks allow them to resolve the connection by just  using the STUN servers | Nodes will always connect among each  other bypassing networks limitations by using a combination of STUN and  TURN servers; credentials fo said servers will be obtained by the provided endpoint |
 | Nodes authentication to the Broker | As long as no other Node with the same ID is connected, the connecting Node will always be authenticated successfully               | The limit on ID duplicates will be maintained but the custom  authentication logic provided by the endpoint will be enforced                                                                       |
 | Nodes communication authorization  | Two connected Nodes will always be able to exchange messages through the Broker in order to establish their connection              | Two connected Nodes will be able to exchange messages through the Broker in order to establish their connection only if the custom logic provided by the endpoint will allow them to               |
 | Nodes validity through lifecycle   | Nodes connected to the Broker will always be considered valid                                                                       | The Broker will periodically check for its connected nodes validity by using the custom logic provided by the endpoint (e.g. a Node gets banned and needs to be disconnected)                      |
 
-## Running the extended example
-### Generating coturn certificates
+## Running the architecture examples
+
+### Running the standalone example
+Running a single broker instance is the simplest way to use the Crolang Broker.
+
+On a terminal, run the following command:
+```bash
+docker run --rm --name broker-service -p 8080:8080 alessandrotalmi/broker-service
+```
+This will run a single Broker instance on the default port 8080 and won't require any additional setup.
+
+Once the service is running, try connecting to it using any Crolang Node client implementation, using __http://localhost:8080__ as the Broker address.  
+As long as the clients are networks that are resolvable by just using STUN servers, they will be able to connect to each other without any additional setup.
+
+### Running the extended example
+#### Generating coturn certificates
 In order to run the coturn service, you need to generate some certificates for the coturn service.  
 
 To generate said certificates, run the following command:
@@ -112,7 +131,7 @@ This will generate the following files:
 
 The coturn service will use these files to establish a secure connection; the certificates will last for 365 days.
 
-### Executing the docker-compose
+#### Executing the docker-compose
 
 After generating the certificates, you can run the complete example.
 
