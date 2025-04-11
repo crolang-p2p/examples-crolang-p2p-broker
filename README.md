@@ -172,10 +172,12 @@ If X needs to connect with Y, A would not be able to propagate the message to B 
 to authenticate using X's ID and the proxy redirects its connection attempt to the Broker B, the Broker B would not be able to tell that the Node X is already connected to Broker A.  
 Having unique IDs is a key aspect since, from the Node's perspective, you need to know exactly who you are talking to.
 
-To solve this problem, it is possible to use the __REDIS_URL__ environment variable to specify the Redis service URL.  
-Through the use of Redis, the Broker instances can share the connected Nodes IDs and propagate the messages between among every Broker instance flawlessly.  
+To solve this problem, it is possible to use the REDIS_URL environment variable to specify the Redis service URL.  
+Through the use of Redis, the Broker instances can share the connected Nodes IDs and propagate the messages between among every Broker instance flawlessly.
 
-If on the other hand the __REDIS_URL__ environment variable is not provided, the Broker will assume it is running standalone without any other Broker replicas, 
+The usage of Redis is necessary if horizontal scalability is required.
+
+If on the other hand the REDIS_URL environment variable is not provided, the Broker will assume it is running standalone without any other Broker replicas, 
 using an in-memory approach.
 
 ### Nodes connectivity
