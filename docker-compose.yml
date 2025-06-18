@@ -28,7 +28,7 @@ services:
     restart: always
 
   broker-service-1:
-    image: alessandrotalmi/broker-service
+    image: crolangp2p/broker
     container_name: broker-1
     depends_on:
       - redis-service
@@ -44,7 +44,7 @@ services:
       - NODES_VALIDITY_CHECK_WEBHOOK_URL=http://webhook-extensions-server:8083/validity-check
 
   broker-service-2:
-    image: alessandrotalmi/broker-service
+    image: crolangp2p/broker
     container_name: broker-2
     depends_on:
       - redis-service
