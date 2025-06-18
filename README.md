@@ -25,7 +25,7 @@ it helps nodes discover each other and establish direct WebRTC connections.
 Running a single broker instance is the simplest way to use the Crolang Broker.
 
 This is achieved by simply [running a Docker container using the Broker image](https://github.com/crolang-p2p/crolang-p2p-broker?tab=readme-ov-file#run-the-broker), 
-without any additional setup, resulting in a single running instance of the Broker service and the STUN servers (always on remotely hosted free STUN servers).
+without any additional setup, resulting in a single running instance of the Broker and the STUN server (always on remotely hosted free STUN servers).
 
 ![Standalone architecture](./doc/broker_standalone_example.png)
  
