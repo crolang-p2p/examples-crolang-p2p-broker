@@ -1,4 +1,4 @@
-# examples-crolang-p2p-broker-extensions
+# examples-crolang-p2p-broker
 Repository containing examples on how to use advanced functionalities of the [CrolangP2P Broker](https://github.com/crolang-p2p/crolang-p2p-broker) for the [CrolangP2P project](https://github.com/crolang-p2p).
 
 ## Table of contents
