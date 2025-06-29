@@ -8,14 +8,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crolang/broker_complete_example.git"
+    "url": "git+https://github.com/crolang/examples-crolang-p2p-broker.git"
   },
   "author": "Alessandro Talmi alessandro.talmi@gmail.com",
-  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/crolang/broker_complete_example/issues"
+    "url": "https://github.com/crolang/examples-crolang-p2p-broker/issues"
   },
-  "homepage": "https://github.com/crolang/broker_complete_example#readme",
+  "homepage": "https://github.com/crolang/examples-crolang-p2p-broker#readme",
   "dependencies": {
     "crypto": "^1.0.1",
     "express": "^4.21.2"
