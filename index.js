@@ -46,28 +46,33 @@ app.post('/resolve-rtc-configuration', (req, res) => {
         rtcpMuxPolicy: "require",
         iceCandidatePoolSize: 10
     };
-    console.log("Sending RTC configuration to node with id ", nodeId);
+    console.log("Sending RTC configuration to node with id", nodeId);
     res.json({ rtcConfiguration: rtcConfiguration });
 });
 
 app.post('/authenticate-node', (req, res) => {
     const { id, data } = req.body;
-    console.log("Received authentication request from node with id ", id, ": ", data);
+    console.log("Received authentication request from node with id", id, ":", data);
     res.json({ authenticated: true });
 });
 
 app.post('/authorize-nodes-communication', (req, res) => {
     const { from, to } = req.body;
-    console.log("Received authorization request from node with id ", from, " to communicate with node with id ", to);
+    console.log("Received authorization request from node with id", from, "to communicate with node with id", to);
     res.json({ authorized: true });
 });
 
 app.post('/validity-check', (req, res) => {
     const { connectedNodesIds } = req.body;
-    console.log("Received from broker these connected nodes ids: ", connectedNodesIds);
+    console.log("Received from broker these connected nodes ids:", connectedNodesIds);
     const invalidNodesIds = connectedNodesIds.filter(nodeId => nodeId === "to-be-disconnected");
-    console.log("Sending to broker these invalid nodes ids: ", invalidNodesIds);
+    console.log("Sending to broker these invalid nodes ids:", invalidNodesIds);
     res.json({ invalidNodesIds: invalidNodesIds });
+});
+
+app.post('/authenticated-socket-msg', (req, res) => {
+    const { senderId, receiverId, isReceiverConnected } = req.body;
+    console.log(senderId, "sent a websocket message to", receiverId, "(is", receiverId, "connected to Broker:", isReceiverConnected, ")");
 });
 
 app.listen(PORT, () => {

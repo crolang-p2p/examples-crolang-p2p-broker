@@ -42,6 +42,7 @@ services:
       - NODES_AUTHENTICATION_WEBHOOK_URL=http://webhook-extensions-server:8083/authenticate-node
       - AUTHORIZE_NODES_COMMUNICATION_WEBHOOK_URL=http://webhook-extensions-server:8083/authorize-nodes-communication
       - NODES_VALIDITY_CHECK_WEBHOOK_URL=http://webhook-extensions-server:8083/validity-check
+      - ON_AUTHENTICATED_SOCKET_MSG_WEBHOOK_URL=http://webhook-extensions-server:8083/authenticated-socket-msg
 
   broker-service-2:
     image: crolangp2p/broker
@@ -58,6 +59,7 @@ services:
       - NODES_AUTHENTICATION_WEBHOOK_URL=http://webhook-extensions-server:8083/authenticate-node
       - AUTHORIZE_NODES_COMMUNICATION_WEBHOOK_URL=http://webhook-extensions-server:8083/authorize-nodes-communication
       - NODES_VALIDITY_CHECK_WEBHOOK_URL=http://webhook-extensions-server:8083/validity-check
+      - ON_AUTHENTICATED_SOCKET_MSG_WEBHOOK_URL=http://webhook-extensions-server:8083/authenticated-socket-msg
 
   haproxy-service:
     image: haproxy
